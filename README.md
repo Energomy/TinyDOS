@@ -114,10 +114,10 @@ bash build.sh
 
 ### Step 3: Run!
 
-The script will create `build/tinydos.iso`. You can run it with QEMU:
+The script will create `bootable.iso`. You can run it with QEMU:
 
 ```bash
-qemu-system-x86_64 -cdrom build/tinydos.iso
+qemu-system-x86_64 -cdrom bootable.iso
 ```
 
 ## 🔧 Architecture & The Build Process
