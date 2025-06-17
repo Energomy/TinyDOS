@@ -16,7 +16,7 @@ A minimalist "Linux From Scratch" style OS with a custom-written, nostalgic DOS-
 
 Imagine booting a modern Linux kernel directly into a nostalgic MS-DOS-like environment. **That's TinyDOS.**
 
-This is an educational project that explores the fundamentals of a Linux system. By stripping away the complexities of modern distributions, we are left with the bare essentials: a bootloader, a kernel, and a single user-space application that acts as the shell and `init` process.
+This is an educational project that explores the fundamentals of a Linux system. By stripping away the complexities of modern distributions, we are left with the bare essentials: a bootloader, a kernel, a minimal userspace, and our own shell.
 
 The heart of the project is the custom `init.c` shell, which provides a classic command-line experience on top of a powerful, modern Linux kernel.
 
@@ -86,8 +86,34 @@ The custom shell implements many classic commands internally. For anything else,
 | `XCOPY [src] [dst]` | Recursively copies files and directories.            |
 | `DEL`/`ERASE [file]`| Deletes a file.                                      |
 | `REN`/`MOVE [src]`  | Renames or moves a file or directory.                |
+| `EDIT [file]`       | Opens the file in MiniEdit, TinyDOS's C text editor. |
 | `REBOOT`            | Restarts the system.                                 |
 | `EXIT`/`SHUTDOWN`   | Powers off the system.                               |
+
+---
+
+## 📝 The `edit` Command and MiniEdit
+
+TinyDOS includes an `edit` command, which launches the built-in text editor called **MiniEdit**.
+
+### About MiniEdit
+
+- `MiniEdit` is a C text editor inspired by the best features of both Vim and Nano.
+- You can think of it as: **miniedit = Vim + Nano**.
+- It’s simple to use for beginners (like Nano), but also provides efficient navigation and editing shortcuts (like Vim).
+- For a detailed look at its implementation and features, see [`miniedit.c`](./miniedit.c).
+
+### Usage
+
+To open MiniEdit, simply run:
+```shell
+edit filename
+```
+This opens or creates the file `filename` in MiniEdit.
+
+Explore and enjoy efficient text editing in TinyDOS!
+
+---
 
 ## 🚀 Quick Start: Build & Run
 
@@ -113,7 +139,6 @@ bash build.sh
 ```
 
 ### Step 3: Run!
-hello
 
 The script will create `bootable.iso`. You can run it with QEMU:
 
@@ -133,8 +158,6 @@ Understanding the architecture is key to the project's purpose.
 
 The `build.sh` script automates the entire "Linux From Scratch" style workflow:
 *   It compiles `init.c` into a static binary.
-*   It downloads, configures, and compiles the specified Linux Kernel.
-*   It downloads, configures, and compiles BusyBox.
 *   It constructs an `initramfs` (initial RAM filesystem) containing the necessary directory structure (`/bin`, `/sbin`, `/dev`, etc.) and populates it with BusyBox and our `init` program.
 *   Finally, it packages the kernel and the `initramfs` into a bootable `tinydos.iso` using `xorriso`.
 
