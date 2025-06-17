@@ -161,7 +161,7 @@ void format_path_for_dos(const char* linux_path, char* dos_path_buffer) {
 }
 
 void show_help() {
-    printf("\nMyTinyDOS v0.0.2 Command Reference\n");
+    printf("\nTinyDOS v0.0.2 Command Reference\n");
     printf("  ? or HELP              Shows this help message.\n");
     printf("  ABOUT                  Shows author information.\n");
     printf("  VER                    Shows version information.\n");
@@ -182,14 +182,14 @@ void show_help() {
 }
 
 void show_about() {
-    printf("\nMyTinyDOS Shell\n");
+    printf("\nTinyDOS Shell\n");
     printf("  Author: minhmc2007\n");
     printf("  GitHub: https://github.com/minhmc2007\n\n");
 }
 
 void show_version() {
     struct utsname kernel_info;
-    printf("MyTinyDOS Shell [Version 0.0.1 (2025)]\n");
+    printf("TinyDOS Shell [Version 0.0.2 (2025)]\n");
     if (uname(&kernel_info) == 0) {
         printf("Running on Linux %s (%s)\n", kernel_info.release, kernel_info.machine);
     }
