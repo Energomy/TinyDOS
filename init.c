@@ -32,7 +32,7 @@ int main() {
     char* token;
 
     // The kernel provides a working console. We just use it.
-    printf("\nMyTinyDOS v0.0.1 - (c) 2025\n\n");
+    printf("\nTinyDOS v0.0.2 - (c) 2025\n\n");
 
     while (1) {
         char real_cwd[PATH_MAX_LEN];
@@ -161,7 +161,7 @@ void format_path_for_dos(const char* linux_path, char* dos_path_buffer) {
 }
 
 void show_help() {
-    printf("\nMyTinyDOS v0.0.1 Command Reference\n");
+    printf("\nMyTinyDOS v0.0.2 Command Reference\n");
     printf("  ? or HELP              Shows this help message.\n");
     printf("  ABOUT                  Shows author information.\n");
     printf("  VER                    Shows version information.\n");
@@ -178,6 +178,7 @@ void show_help() {
     printf("  REN/MOVE [src] [dst]   Renames or moves a file/directory.\n");
     printf("  REBOOT                 Restarts the system.\n");
     printf("  EXIT/SHUTDOWN          Powers off the system.\n\n");
+    printf("  EDIT                   A minimal text editor for TinyDOS.\n");
 }
 
 void show_about() {

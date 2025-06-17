@@ -113,6 +113,7 @@ bash build.sh
 ```
 
 ### Step 3: Run!
+hello
 
 The script will create `bootable.iso`. You can run it with QEMU:
 
