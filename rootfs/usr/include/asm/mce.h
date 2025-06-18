@@ -1,1 +1,0 @@
-../../../lib/linux/uapi/x86/asm/mce.h

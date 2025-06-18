@@ -1,1 +1,0 @@
-../../../lib/linux/uapi/x86/asm/hwcap2.h
