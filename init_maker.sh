@@ -15,6 +15,7 @@ cp busybox rootfs/bin/
 # Create the device nodes
 mknod -m 666 rootfs/dev/null c 1 3
 mknod -m 666 rootfs/dev/tty c 5 0
+mknod rootfs/dev/fb0 c 29 0
 mknod -m 666 rootfs/dev/console c 5 1
 
 # Package the initramfs
