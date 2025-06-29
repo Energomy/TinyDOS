@@ -1,5 +1,6 @@
 # TinyDOS
 
+![logo](tinydos.png)
 A minimalist "Linux From Scratch" style OS with a custom-written, nostalgic DOS-like shell.
 
 **[https://github.com/minhmc2007/TinyDOS](https://github.com/minhmc2007/TinyDOS)**
