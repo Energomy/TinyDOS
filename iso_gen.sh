@@ -1,6 +1,6 @@
 cp bzImage iso-root/boot/vmlinuz
 cp initramfs.cpio.gz iso-root/boot/initrd.gz
-genisoimage -o bootable.iso \
+genisoimage -o bootable-tiny.iso \
     -b isolinux/isolinux.bin \
     -c isolinux/boot.cat \
     -no-emul-boot \
