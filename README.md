@@ -8,7 +8,7 @@ A minimalist "Linux From Scratch" style OS with a custom-written, nostalgic DOS-
 ![Kernel](https://img.shields.io/badge/Linux%20Kernel-6.15.2--tinyDOS-blue.svg)
 ![Userspace](https://img.shields.io/badge/Userspace-BusyBox-yellow.svg)
 ![Bootloader](https://img.shields.io/badge/Bootloader-ISOLINUX-green.svg)
-![License](https://img.shields.io/badge/License-GNU-lightgrey.svg)
+![License](https://img.shields.io/badge/License-GPLv3-lightgrey.svg)
 
 ---
 
