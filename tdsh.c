@@ -5,7 +5,7 @@
  * - Provides a DOS-like command-line interface.
  * - Implements built-in commands like DIR, CD, COPY, etc.
  * - Contains a custom user-space ELF loader to execute other static,
- *   non-PIE executables from the /TinyDOS/system32/ directory.
+ *   non-PIE executables from the /TinyDOS/System64/ directory.
  *
  * To compile:
  * gcc -static -o cmd shell.c
@@ -53,7 +53,7 @@ int main() {
     char* args[MAX_ARGS];
     char* token;
 
-    printf("\nTinyDOS v0.0.2 - (c) 2025\n\n");
+    printf("\nTinyDOS v0.0.3 - (c) 2025\n\n");
 
     while (1) {
         char real_cwd[PATH_MAX_LEN];
@@ -157,11 +157,11 @@ int main() {
             // --- External Command Execution via Custom ELF Loader ---
             char full_path[PATH_MAX_LEN];
             
-            // If the command is an absolute path, use it. Otherwise, look in /TinyDOS/system32/
+            // If the command is an absolute path, use it. Otherwise, look in /TinyDOS/System64/
             if (command[0] == '/') {
                 strncpy(full_path, command, sizeof(full_path) - 1);
             } else {
-                snprintf(full_path, sizeof(full_path), "/TinyDOS/system32/%s", command);
+                snprintf(full_path, sizeof(full_path), "/TinyDOS/System64/%s", command);
             }
             full_path[sizeof(full_path) - 1] = '\0'; // Ensure null termination
 

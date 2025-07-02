@@ -5,7 +5,7 @@
 #include <sys/reboot.h>
 #include <signal.h>
 
-const char* SHELL_PATH = "/TinyDOS/system32/tdsh";
+const char* SHELL_PATH = "/TinyDOS/System64/cmd";
 
 void handle_shutdown_signal(int sig) {
     printf("\nInit: Shutdown signal received. Powering off.\n");
