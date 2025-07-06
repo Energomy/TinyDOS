@@ -1,0 +1,1 @@
+x86_64-linux-gnu-gcc -static ../src/tiny/init.c -o ../init
