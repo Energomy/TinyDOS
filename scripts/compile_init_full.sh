@@ -1,1 +1,1 @@
-x86_64-linux-gnu-gcc -static ../src/full/init.c -o ../init
+x86_64-linux-gnu-gcc -static ../src/full/init.c -o ../rootfs/bin/init

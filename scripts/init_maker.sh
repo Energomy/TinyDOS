@@ -5,12 +5,10 @@
 mkdir -p ../rootfs/bin ../rootfs/sbin ../rootfs/dev ../rootfs/proc ../rootfs/sys
 
 # Copy your NEW init program and link it
-cp ../init ../rootfs/bin/
+
 ln -s /bin/init ../rootfs/sbin/init
 
-# <<< --- NEW PART: COPY BUSYBOX --- >>>
-# Copy the compiled busybox binary into the bin directory
-cp ../busybox ../rootfs/bin/
+
 
 # Create the device nodes
 mknod -m 666 ../rootfs/dev/null c 1 3
