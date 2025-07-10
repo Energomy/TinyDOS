@@ -51,7 +51,7 @@ int main() {
     setenv("PATH", "/usr/bin:/bin:/usr/sbin:/sbin", 1);
 
 
-    printf("\nTinyDOS v0.0.5 - (c) 2025\n\n");
+    printf("\nTinyDOS v0.0.3 - (c) 2025\n\n");
 
     while (1) {
         char real_cwd[PATH_MAX_LEN];
@@ -205,7 +205,7 @@ void format_path_for_dos(const char* linux_path, char* dos_path_buffer) {
 }
 
 void show_help() {
-    printf("\nTinyDOS v0.0.5 Command Reference\n");
+    printf("\nTinyDOS v0.0.3 Command Reference\n");
     printf("  ? or HELP              Shows this help message.\n");
     printf("  ABOUT                  Shows author information.\n");
     printf("  VER                    Shows version information.\n");
@@ -233,7 +233,7 @@ void show_about() {
 
 void show_version() {
     struct utsname kernel_info;
-    printf("TinyDOS Shell [Version 0.0.5 (2025)]\n");
+    printf("TinyDOS Shell [Version 0.0.3 (2025)]\n");
     if (uname(&kernel_info) == 0) {
         printf("Running on Linux %s (%s)\n", kernel_info.release, kernel_info.machine);
     }

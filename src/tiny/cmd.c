@@ -182,11 +182,6 @@ int main() {
     return 0; // Exit the shell
 }
 
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// +++ CUSTOM ELF LOADER - REMOVED +++
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
 // --- Helper Function Implementations ---
 
 void normalize_path_to_linux(char* path) {
@@ -210,7 +205,7 @@ void format_path_for_dos(const char* linux_path, char* dos_path_buffer) {
 }
 
 void show_help() {
-    printf("\nTinyDOS v0.0.2 Command Reference\n");
+    printf("\nTinyDOS v0.0.3 Command Reference\n");
     printf("  ? or HELP              Shows this help message.\n");
     printf("  ABOUT                  Shows author information.\n");
     printf("  VER                    Shows version information.\n");
@@ -238,7 +233,7 @@ void show_about() {
 
 void show_version() {
     struct utsname kernel_info;
-    printf("TinyDOS Shell [Version 0.0.2 (2025)]\n");
+    printf("TinyDOS Shell [Version 0.0.3 (2025)]\n");
     if (uname(&kernel_info) == 0) {
         printf("Running on Linux %s (%s)\n", kernel_info.release, kernel_info.machine);
     }
