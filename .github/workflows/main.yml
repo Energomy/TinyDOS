@@ -1,0 +1,180 @@
+name: Auto Update Kernel and Matrix Build
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  # runs daily at 3AM UTC
+  workflow_dispatch:    # manual trigger
+
+jobs:
+  update-kernel:
+    runs-on: ubuntu-latest
+    outputs:
+      kernel_version: ${{ steps.latest.outputs.version }}
+      version_changed: ${{ steps.check.outputs.changed }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get current version
+        id: current
+        run: echo "version=$(cat kernel/version.txt)" >> $GITHUB_OUTPUT
+
+      - name: Fetch latest stable kernel version
+        id: latest
+        run: |
+          ver=$(curl -s https://www.kernel.org | grep -oP 'stable: \K[0-9.]+')
+          echo "version=$ver" >> $GITHUB_OUTPUT
+
+      - name: Check if version changed
+        id: check
+        run: |
+          if [ "${{ steps.latest.outputs.version }}" != "${{ steps.current.outputs.version }}" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update version.txt if changed
+        if: steps.check.outputs.changed == 'true'
+        run: echo "${{ steps.latest.outputs.version }}" > kernel/version.txt
+
+      - name: Commit version update
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add kernel/version.txt
+          git commit -m "chore: update kernel to ${{ steps.latest.outputs.version }}"
+          git push
+
+  matrix-build:
+    needs: update-kernel
+    if: needs.update-kernel.outputs.version_changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180  # 3 hours max
+    strategy:
+      matrix:
+        flavor: [tiny, full]
+      fail-fast: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main  # Ensure we get the latest changes
+
+      - name: Pull latest changes
+        run: git pull origin main
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            libncurses-dev \
+            bison \
+            flex \
+            libssl-dev \
+            libelf-dev \
+            bc \
+            kmod \
+            cpio \
+            rsync
+
+      - name: Cache kernel source
+        uses: actions/cache@v3
+        with:
+          path: linux-${{ needs.update-kernel.outputs.kernel_version }}
+          key: kernel-source-${{ needs.update-kernel.outputs.kernel_version }}
+          restore-keys: |
+            kernel-source-
+
+      - name: Download Linux kernel source
+        run: |
+          if [ ! -d "linux-${{ needs.update-kernel.outputs.kernel_version }}" ]; then
+            wget https://cdn.kernel.org/pub/linux/kernel/v$(echo ${{ needs.update-kernel.outputs.kernel_version }} | cut -d. -f1).x/linux-${{ needs.update-kernel.outputs.kernel_version }}.tar.xz
+            tar -xf linux-${{ needs.update-kernel.outputs.kernel_version }}.tar.xz
+            rm linux-${{ needs.update-kernel.outputs.kernel_version }}.tar.xz
+          fi
+          ln -sf linux-${{ needs.update-kernel.outputs.kernel_version }} linux
+
+      - name: Copy config for ${{ matrix.flavor }} build
+        run: cp config/config-${{ matrix.flavor }} linux/.config
+
+      - name: Prepare kernel config
+        working-directory: linux
+        run: |
+          make olddefconfig
+          make prepare
+
+      - name: Cache build objects
+        uses: actions/cache@v3
+        with:
+          path: linux
+          key: kernel-build-${{ needs.update-kernel.outputs.kernel_version }}-${{ matrix.flavor }}-${{ hashFiles('config/config-*') }}
+          restore-keys: |
+            kernel-build-${{ needs.update-kernel.outputs.kernel_version }}-${{ matrix.flavor }}-
+            kernel-build-${{ needs.update-kernel.outputs.kernel_version }}-
+
+      - name: Build kernel (${{ matrix.flavor }})
+        working-directory: linux
+        run: |
+          make -j$(nproc) bzImage
+          make -j$(nproc) modules
+
+      - name: Copy built bzImage
+        run: |
+          if [ "${{ matrix.flavor }}" = "tiny" ]; then
+            cp linux/arch/x86/boot/bzImage ./bzImage
+          else
+            cp linux/arch/x86/boot/bzImage ./bzImage-full
+          fi
+
+      - name: Create build info
+        run: |
+          echo "Kernel Version: ${{ needs.update-kernel.outputs.kernel_version }}" > build-info-${{ matrix.flavor }}.txt
+          echo "Build Flavor: ${{ matrix.flavor }}" >> build-info-${{ matrix.flavor }}.txt
+          echo "Build Date: $(date)" >> build-info-${{ matrix.flavor }}.txt
+          echo "Build Host: $(hostname)" >> build-info-${{ matrix.flavor }}.txt
+
+      - name: Create branch and PR for ${{ matrix.flavor }} build
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "ci(build): ${{ matrix.flavor }} flavor build for kernel ${{ needs.update-kernel.outputs.kernel_version }}"
+          title: "chore: ${{ matrix.flavor }} build for kernel ${{ needs.update-kernel.outputs.kernel_version }}"
+          body: |
+            This PR contains the ${{ matrix.flavor }} configuration build for Linux kernel version ${{ needs.update-kernel.outputs.kernel_version }}.
+            
+            ## Build Details
+            - **Kernel Version**: ${{ needs.update-kernel.outputs.kernel_version }}
+            - **Build Flavor**: ${{ matrix.flavor }}
+            - **Build Date**: ${{ github.run_id }}
+            - **Commit**: ${{ github.sha }}
+            
+            ## Files Changed
+            - `bzImage${{ matrix.flavor == 'full' && '-full' || '' }}` - Compiled kernel image
+            - `build-info-${{ matrix.flavor }}.txt` - Build information
+            
+            This build was automatically generated by the kernel update workflow.
+          base: main
+          branch: build-${{ matrix.flavor }}-${{ needs.update-kernel.outputs.kernel_version }}
+          delete-branch: true
+          paths: |
+            bzImage${{ matrix.flavor == 'full' && '-full' || '' }}
+            build-info-${{ matrix.flavor }}.txt
+
+  notify-completion:
+    needs: [update-kernel, matrix-build]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Notify build completion
+        run: |
+          if [ "${{ needs.matrix-build.result }}" = "success" ]; then
+            echo "✅ Kernel build completed successfully for version ${{ needs.update-kernel.outputs.kernel_version }}"
+          else
+            echo "❌ Kernel build failed for version ${{ needs.update-kernel.outputs.kernel_version }}"
+            exit 1
+          fi
