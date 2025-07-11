@@ -24,8 +24,9 @@ jobs:
       - name: Fetch latest stable kernel version
         id: latest
         run: |
-          ver=$(curl -s https://www.kernel.org | grep -oP 'stable: \K[0-9.]+')
-          echo "version=$ver" >> $GITHUB_OUTPUT
+          # Use kernel.org's JSON API for reliable version parsing
+          version=$(curl -s https://www.kernel.org/releases.json | jq -r '.releases[] | select(.moniker == "stable") | .version')
+          echo "version=$version" >> $GITHUB_OUTPUT
 
       - name: Check if version changed
         id: check
@@ -53,7 +54,7 @@ jobs:
     needs: update-kernel
     if: needs.update-kernel.outputs.version_changed == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 180  # 3 hours max
+    timeout-minutes: 180
     strategy:
       matrix:
         flavor: [tiny, full]
@@ -62,7 +63,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: main  # Ensure we get the latest changes
+          ref: main
 
       - name: Pull latest changes
         run: git pull origin main
@@ -80,7 +81,8 @@ jobs:
             bc \
             kmod \
             cpio \
-            rsync
+            rsync \
+            jq  # Ensure jq is installed for JSON parsing
 
       - name: Cache kernel source
         uses: actions/cache@v3
