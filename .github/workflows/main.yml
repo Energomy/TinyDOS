@@ -162,7 +162,7 @@ jobs:
           if [ "${{ matrix.flavor }}" = "tiny" ]; then
             cp linux/arch/x86/boot/bzImage ./bzImage
           else
-            cp linux/arch/x86/boot/bzImage ./bzImage-full
+            cp linux/arch/x86/boot/bzImage ./bzImage-big
           fi
 
       - name: Create build info
