@@ -4,12 +4,12 @@ on:
   schedule:
     - cron: '0 3 * * *'  # runs daily at 3AM UTC
   workflow_dispatch:    # manual trigger
+  permissions:
+    contents: write
 
 jobs:
   update-kernel:
-    runs-on: ubuntu-latest 
-    permissions:
-      contents: write 
+    runs-on: ubuntu-latest
     outputs:
       kernel_version: ${{ steps.latest.outputs.version }}
       version_changed: ${{ steps.check.outputs.changed }}
@@ -174,7 +174,7 @@ jobs:
           base: main
           branch: build-${{ matrix.flavor }}-${{ needs.update-kernel.outputs.kernel_version }}
           delete-branch: true
-          paths: |
+          add-paths: |
             bzImage${{ matrix.flavor == 'full' && '-full' || '' }}
             build-info-${{ matrix.flavor }}.txt
 
