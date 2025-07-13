@@ -7,7 +7,9 @@ on:
 
 jobs:
   update-kernel:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest 
+    permissions:
+      contents: write 
     outputs:
       kernel_version: ${{ steps.latest.outputs.version }}
       version_changed: ${{ steps.check.outputs.changed }}
