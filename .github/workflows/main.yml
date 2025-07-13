@@ -4,12 +4,13 @@ on:
   schedule:
     - cron: '0 3 * * *'  # runs daily at 3AM UTC
   workflow_dispatch:    # manual trigger
-  permissions:
-    contents: write
-
+  
+    
 jobs:
   update-kernel:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write 
     outputs:
       kernel_version: ${{ steps.latest.outputs.version }}
       version_changed: ${{ steps.check.outputs.changed }}
