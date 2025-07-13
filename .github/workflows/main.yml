@@ -17,15 +17,24 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Ensure version.txt exists
+        run: |
+          mkdir -p kernel
+          if [ ! -f "kernel/version.txt" ]; then
+            echo "0.0.0" > kernel/version.txt
+          fi
+
       - name: Get current version
         id: current
         run: echo "version=$(cat kernel/version.txt)" >> $GITHUB_OUTPUT
 
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
       - name: Fetch latest stable kernel version
         id: latest
         run: |
-          # Use kernel.org's JSON API for reliable version parsing
-          version=$(curl -s https://www.kernel.org/releases.json | jq -r '.releases[] | select(.moniker == "stable") | .version')
+          version=$(curl -s https://www.kernel.org/releases.json | jq -r '.latest BPA_stable.version')
           echo "version=$version" >> $GITHUB_OUTPUT
 
       - name: Check if version changed
@@ -82,7 +91,7 @@ jobs:
             kmod \
             cpio \
             rsync \
-            jq  # Ensure jq is installed for JSON parsing
+            jq
 
       - name: Cache kernel source
         uses: actions/cache@v3
@@ -174,9 +183,13 @@ jobs:
     steps:
       - name: Notify build completion
         run: |
-          if [ "${{ needs.matrix-build.result }}" = "success" ]; then
-            echo "✅ Kernel build completed successfully for version ${{ needs.update-kernel.outputs.kernel_version }}"
+          if [ "${{ needs.update-kernel.outputs.version_changed }}" = "true" ]; then
+            if [ "${{ needs.matrix-build.result }}" = "success" ]; then
+              echo "✅ Kernel build completed successfully for version ${{ needs.update-kernel.outputs.kernel_version }}"
+            else
+              echo "❌ Kernel build failed for version ${{ needs.update-kernel.outputs.kernel_version }}"
+              exit 1
+            fi
           else
-            echo "❌ Kernel build failed for version ${{ needs.update-kernel.outputs.kernel_version }}"
-            exit 1
+            echo "ℹ️ No kernel version change, no build performed."
           fi
