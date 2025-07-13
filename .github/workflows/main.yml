@@ -34,7 +34,7 @@ jobs:
       - name: Fetch latest stable kernel version
         id: latest
         run: |
-          version=$(curl -s https://www.kernel.org/releases.json | jq -r '.latest BPA_stable.version')
+          version=$(curl -s https://www.kernel.org/releases.json | jq -r '.latest_stable.version')
           echo "version=$version" >> $GITHUB_OUTPUT
 
       - name: Check if version changed
