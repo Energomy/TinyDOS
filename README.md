@@ -9,7 +9,7 @@ A minimalist "Linux From Scratch" style OS with a custom-written, nostalgic DOS-
 **[https://github.com/minhmc2007/TinyDOS](https://github.com/minhmc2007/TinyDOS)**
 
 ![Build Status](https://img.shields.io/badge/build-passing-success.svg)
-![Kernel](https://img.shields.io/badge/Linux%20Kernel-6.15.7--tinyDOS-blue.svg)
+![Kernel](https://img.shields.io/badge/Linux%20Kernel-6.16--tinyDOS-blue.svg)
 ![Userspace](https://img.shields.io/badge/Userspace-BusyBox-yellow.svg)
 ![Bootloader](https://img.shields.io/badge/Bootloader-ISOLINUX-green.svg)
 ![License](https://img.shields.io/badge/License-GPLv3-lightgrey.svg)
